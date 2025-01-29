@@ -33,50 +33,143 @@ total_sale: Total revenue from the transaction
 
 This project includes solutions to 20 SQL practice questions, covering the following topics:
 
-#### Basic Queries
+### Basic Queries
 
-Retrieve all transactions.
+1.  Retrieve all transactions.
+        
+        select * from retail_sales; 
+ 
 
-Find the maximum price_per_unit in the dataset.
 
-Find the transaction with the highest total_sale.
+2. Find the maximum price_per_unit in the dataset.
+    
+        select * from retail_sales
 
-Count the number of transactions per month.
+       where price_per_unit = (select max(price_per_unit) from retail_sales)
 
-Retrieve customers who made purchases more than once.
+       order by total_sale DESC
+    
+       limit 1;
 
-Calculate the total sales for each customer.
+3. Find the transaction with the highest total_sale.
+     
+        SELECT * FROM retail_sales
 
-Find transactions where COGS is greater than 100.
+        WHERE total_sale = (SELECT MAX(total_sale) FROM retail_sales);
 
-Retrieve the most expensive product in each category.
 
-#### Intermediate Queries
+4. -- Find transactions from a specific date: Retrieve all transactions that occurred on "2022-11-05".
 
-Find the percentage contribution of each category to total sales.
+        select * from retail_sales 
+        where sale_date in ("2022-11-05") ;
 
-Find the total number of products sold per category.
 
-Find the most frequent customer based on the number of transactions.
 
-Retrieve the top 5 highest spending customers.
+5. Retrieve customers who made purchases more than once.
+       
+        SELECT customer_id
+        FROM retail_sales
+        GROUP BY customer_id
+        HAVING COUNT(*) > 1;
 
-Find the average quantity sold per category.
+6. Calculate the total sales for each customer.
+        
+        select customer_id, sum(total_sale) from retail_sales 
+        group by customer_id;
 
-Calculate the total revenue generated per month.
+7. Find transactions where COGS is greater than 100.
 
-Find transactions that occurred in the morning (before 12 PM).
+        select * from retail_sales 
+        where cogs > 100 ; 
 
-Find the average sale amount for each customer.
+8. Retrieve the most expensive product in each category.
+       
+        select * from retail_sales 
+        where price_per_unit = (select max(price_per_unit) from retail_sales);
 
-Retrieve the top-selling product category based on total sales.
+      
+### Intermediate Queries:
 
-Count the number of male and female customers who made a purchase.
+1.Find total sales by category:
 
-Identify the highest-selling day of the week.
 
-Retrieve the most frequently purchased product quantity.
+      select sum(total_sale), category from retail_sales 
+      group by category
+      order by category desc;
 
+2. Find sales greater than a specific amount: Retrieve all transactions where the total_sale is greater than 1000.
+
+        select * from retail_sales 
+        where total_sale > 1000
+        order by total_sale;
+
+3. Find the maximum price per unit: Find the transaction with the highest price_per_unit.
+
+        select * from retail_sales
+        where price_per_unit = (select max(price_per_unit) from retail_sales)
+        order by total_sale DESC
+        limit 1;
+
+4. Calculate the total quantity sold by category: Retrieve the total quantity sold for each product category.
+
+        select category, count(quantiy) as quantity_count from retail_sales
+        group by category;
+
+
+5.Find average price per unit by gender: Calculate the average price_per_unit for each gender.
+
+      select gender, avg(price_per_unit) from retail_sales
+      group by gender;
+
+6. Find the transaction with the highest total sale: Retrieve the transaction with the highest total_sale.
+
+        select * from retail_sales 
+        where total_sale = (select max(total_sale) from retail_sales);
+
+
+7. List the number of transactions per month: Count the number of transactions that happened each month (based on sale_date).
+
+        SELECT MONTH(sale_date) AS month, COUNT(*) AS transaction_count
+        FROM retail_sales
+        GROUP BY MONTH(sale_date)
+        ORDER BY month;
+
+
+8. Find customers who made purchases more than once: Retrieve the customer_id of customers who made multiple purchases.
+
+        select customer_id, count(transactions_id) from retail_sales
+        group by customer_id
+        HAVING COUNT(*) > 1;
+
+9. Find the percentage contribution of each category to total sales:
+
+        SELECT category,
+        SUM(total_sale) AS category_sales,
+        (SUM(total_sale) / (SELECT SUM(total_sale) FROM retail_sales) * 100) AS percentage_contribution
+        FROM retail_sales
+        GROUP BY category
+        ORDER BY percentage_contribution DESC;
+
+10. Find the total cost of goods sold (COGS) per gender: Calculate the total COGS for each gender.
+
+        select gender ,sum(cogs) as total_COGS from retail_sales
+        group by gender;
+
+11. Find the most expensive product by category: Retrieve the transaction with the highest price_per_unit for each product category.
+
+        select * from retail_sales 
+        where price_per_unit = (select max(price_per_unit) from retail_sales);
+
+
+12. Find total sales for each customer: Calculate the total total_sale for each customer_id.
+
+        select customer_id, sum(total_sale) from retail_sales
+        group by customer_id;
+
+13. Find transactions where the COGS is greater than 100:
+
+        select * from retail_sales 
+        where cogs > 100;
 
 
 ### 📚 Technologies Used
